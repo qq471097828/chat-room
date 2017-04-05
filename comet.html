@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Comet demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="../bootstrap/js/jquery-1.12.4.js"></script>
+    <script>
+        var timestamp = 0;
+        var url = "backend.php";
+        var error = false;
+        function connect(){
+            $.ajax({
+                //发送当前的时间戳给服务器
+                data : {'timestamp' : timestamp},
+                //设置地址.
+                url : url,
+                //提交方式.
+                type : 'get',
+                //默认值为0，代表用不超时.
+                timeout : 28000,
+                //成功的时候调用.
+                success : function(response){
+                    //返回数据.
+                    var data = eval('('+response+')');
+                    error = false;
+                    //解析数据.
+                    timestamp = data.timestamp;
+                    //将数据写到页面上面.
+                    $("#content").append("<div>"+data.msg+"</div>");
+
+                    //响应开始的时候触发。
+                },
+                complete : function(){
+                        console.log("响应完成触发");
+                       connect();
+                }
+            })
+        }
+        function send(msg){
+            $.ajax({
+                data : {'msg' : msg},
+                type : 'get',
+                url : url
+            })
+        }
+        //页面加载完毕，跟服务器端建立连接.
+        $(document).ready(function(){
+            connect();
+        })
+    </script>
+</head>
+<body>
+
+<div id="content">
+</div>
+
+<p>
+<form action="" method="get" onsubmit="send($('#word').val());$('#word').val('');return false;">
+    <input type="text" name="word" id="word" value="" />
+    <input type="submit" name="submit" value="Send" />
+</form>
+</p>
+
+</body>
+</html>

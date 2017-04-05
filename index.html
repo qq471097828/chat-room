@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajax</title>
+    <!--http://www.tuling123.com/plugin/proexp.html-->
+    <script src="../bootstrap/js/jquery-1.12.4.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #F7F7F7;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        .chatbox {
+            width: 500px;
+            height: 500px;
+            margin: 0 auto;
+            border: 1px solid #CCC;
+            background-color: #FFF;
+            border-radius: 5px;
+        }
+
+        .messages {
+            height: 350px;
+            padding: 20px 40px;
+            box-sizing: border-box;
+            border-bottom: 1px solid #CCC;
+            overflow: scroll;
+        }
+
+        .messages h5 {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+
+        .messages p {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .self {
+            text-align: left;
+        }
+
+        .other {
+            text-align: right;
+        }
+
+        .form {
+            height: 150px;
+        }
+
+        .form .input {
+            height: 110px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .form .btn {
+            height: 40px;
+            box-sizing: border-box;
+            border-top: 1px solid #CCC;
+        }
+        .form textarea {
+            display: block;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border: none;
+            resize: none;
+            outline: none;
+            font-size: 20px;
+        }
+
+        .form input {
+            display: block;
+            width: 100px;
+            height: 30px;
+            margin-top: 5px;
+            margin-right: 20px;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+<h3>简单的Ajax实例</h3>
+<div class="chatbox">
+    <div class="messages">
+
+    </div>
+    <!-- 表单 -->
+    <div class="form">
+        <!-- 输入框 -->
+        <div class="input">
+            <!--我要发送的消息-->
+            <textarea>
+
+            </textarea>
+        </div>
+        <!-- 按钮 -->
+        <div class="btn">
+            <input type="button" value="发送">
+        </div>
+    </div>
+</div>
+<style>
+    /*窗口的布局*/
+    .jd_win{
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+       /* display: none;*/
+    }
+    .jd_win .jd_win_box{
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin: 0 auto;
+        margin-top: 200px;
+        width: 300px;
+        padding: 0 10px;
+    }
+    .jd_win .jd_win_box .info{
+        height: 80px;
+        line-height: 80px;
+        font-size: 16px;
+        margin: 0 auto;
+        text-align: center;
+        width: 90%;
+        border-bottom: 1px solid #ccc;
+    }
+    .jd_win .jd_win_box a{
+        width: 45%;
+        height: 30px;
+        display: block;
+        line-height: 30px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin: 10px auto;
+        text-align: center;
+        text-decoration: none;
+        color: #666;
+
+
+    }
+    .jd_win .jd_win_box .ok{
+        margin-right: 10%;
+
+    }
+    .jd_win .jd_win_box .cancel{
+        background: #d8505c;
+        color: #fff;
+    }
+
+
+</style>
+
+<div class="jd_win">
+    <div class="jd_win_box">
+        <div class="info">
+            <input type="text" placeholder="请输入昵称">
+        </div>
+        <div class="btn">
+            <a href="javascript:;" class="ok">加入群聊</a>
+        </div>
+    </div>
+</div>
+
+<script>
+        $(function(){
+
+               //跟服务器端简历连接
+
+            var myName;
+
+            var timestamp=0;
+
+            function connect(){
+                $.ajax({
+                    type:"get",
+                    data:{
+                        "timestamp":timestamp
+                    },
+                    url:"backend.php",
+                    timeout:28000,
+                    success:function(data){
+                        var obj=eval("("+data+")");
+                        timestamp=obj.timestamp;
+                        $(".messages").append("<p>"+obj.msg+"</p>");
+                    },
+                    complete:function(){
+                         connect();
+                    }
+                })
+            }
+            connect();
+            $(".ok").on("click",function(){
+                   var nickName=$(".info input").val();
+                   if(nickName.length<2){
+                          alert("请输入一个名词");
+                          return;
+                   }
+                   $(".jd_win").hide();
+                   myName=nickName;
+                   //发送一条消息
+                   send(myName+"加入了群聊");
+
+            });
+
+            //发送按钮的点击事件
+
+            $(".btn input").on("click",function(){
+
+                    //获取到用户输入的数据.
+                    var message=$(".input textarea").val();
+                    send(myName+":"+message);
+            });
+
+            function send(msg){
+                 $.ajax({
+                     type:"get",
+                     data:{
+                         msg:msg
+                     },
+                     url:"backend.php"
+                 })
+            };
+
+
+
+
+        })
+
+
+
+</script>
+
+
+</body>
+</html>
